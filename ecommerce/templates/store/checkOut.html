@@ -1,0 +1,152 @@
+{% extends 'store/main.html' %}
+{% load static %}
+  {% block content %}
+      <div class="row">
+        <div class="col-lg-6">
+            <div class="box-element" id="form-wrapper">
+              <form id = "form">
+                <div id = "user-info">
+                  <div class="form-field">
+							        <input required class="form-control" type="text" name="name" placeholder="Name..">
+						      </div>
+						      <div class="form-field">
+							        <input required class="form-control" type="email" name="email" placeholder="Email..">
+						      </div>
+                    <hr>
+                </div>
+                <div id="shipping-info">
+
+        						<p>Shipping Information:</p>
+        						<hr>
+        						<div class="form-field">
+        							<input class="form-control" type="text" name="address" placeholder="Address..">
+        						</div>
+        						<div class="form-field">
+        							<input class="form-control" type="text" name="city" placeholder="City..">
+        						</div>
+        						<div class="form-field">
+        							<input class="form-control" type="text" name="state" placeholder="State..">
+        						</div>
+        						<div class="form-field">
+        							<input class="form-control" type="text" name="zipcode" placeholder="pin code..">
+        						</div>
+                </div>
+                <hr>
+                <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+              </form>
+            </div>
+            <br>
+            <div class="box-element hidden" id="payment-info">
+                {% if request.user.is_authenticated %}
+                  <p style="color:#0275d8;">You are about to place the order</p>
+                {% else %}
+                  <p style="color:#0275d8;">You are about to place the order as a <b>GUEST USER</b></p>
+                {% endif %}
+                 <div class="d-grid gap-2 d-md-block btn-group-vertical">
+                   <button class="btn btn-outline-success" type="button" id="make-payment">Place order & Pay</button>
+                 </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="box-element">
+                <div class="">
+                  <a class="btn btn-outline-dark" href="{% url 'store:cart' %}">&#x2190; Back to Cart</a>
+                </div>
+                <hr>
+                  <h3>Order Summary</h3>
+                <hr>
+                {% for item in items %}
+                <div class="cart-row">
+                  <div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}" alt="img"></div>
+                  <div style="flex:2">{{item.product.name}}</div>
+                  <div style="flex:1">&#x20B9;{{item.product.price}}</div>
+                  <div style="flex:1">x{{item.quantity}}</div>
+                </div>
+                {% endfor %}
+                <h5>items : {{order.get_cart_total_items}}</h5>
+                <h5>Total : &#x20B9;{{order.get_cart_total}}</h5>
+
+            </div>
+        </div>
+      </div>
+
+
+  <script type="text/javascript">
+    var shipping = '{{order.shipping}}'
+    var total = '{{order.get_cart_total}}'
+
+    if (shipping=='False') {
+      document.getElementById('shipping-info').innerHTML=''
+    }
+
+    if(user!='AnonymousUser'){
+      document.getElementById('user-info').innerHTML=''
+    }
+
+    if (shipping=='False'&& user!='AnonymousUser'){
+
+      document.getElementById('form-wrapper').classList.add('hidden')
+      document.getElementById('payment-info').classList.remove('hidden')
+    }
+
+
+
+
+    var form = document.getElementById('form')
+    form.addEventListener('submit',function(e) {
+      e.preventDefault()
+    console.log('form submitted');
+    document.getElementById('form-button').classList.add('hidden')
+    document.getElementById('payment-info').classList.remove('hidden')
+    })
+    document.getElementById('make-payment').addEventListener('click',function (e) {
+      submitFormData()
+    })
+    function submitFormData() {
+      console.log('payment button clicked');
+      var userFormData = {
+        'name':null,
+        'email':null,
+        'total':total,
+      }
+
+      var shippingInfo = {
+        'address':null,
+        'city':null,
+        'state':null,
+        'zipcode':null,
+      }
+
+      if(shipping!='False'){
+        shippingInfo.address = form.address.value
+        shippingInfo.city = form.city.value
+        shippingInfo.state = form.state.value
+        shippingInfo.zipcode = form.zipcode.value
+      }
+
+      if (user=='AnonymousUser'){
+        userFormData.name = form.name.value
+        userFormData.email = form.email.value
+      }
+
+      var url = '/process_order/'
+
+      fetch(url,{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'X-CSRFToken':csrftoken
+        },
+        body:JSON.stringify({'form':userFormData,'shipping':shippingInfo}),
+      })
+      .then((response)=>response.json())
+      .then((data)=>{
+        console.log('success:',data);
+        alert('Yayy...! We have received your order')
+        cart = {}
+        document.cookie = 'cart='+JSON.stringify(cart) + ";domain=;path=/"
+        window.location.href = "{% url 'store:store' %}"
+      })
+    }
+  </script>
+  {% endblock content %}

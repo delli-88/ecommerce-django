@@ -1,0 +1,21 @@
+{% extends 'store/main.html' %}
+{% load static %}
+  {% block content %}
+    <div class="jumbotron">
+      <h1>Please login</h1>
+      <form action="{% url 'store:user_login' %}" method="POST">
+        {% csrf_token %}
+        <div class="col-md-6">
+          <label for="username" class="form-label">User Name</label>
+          <input type="text" class="form-control" name="username" autofocus>
+        </div>
+        <div class="col-md-6">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" name="password">
+        </div>
+        <div class="col-12" style='margin-top:10px'>
+          <button type="submit" class="btn btn-primary">login</button>
+        </div>
+      </form>
+    </div>
+  {% endblock content %}

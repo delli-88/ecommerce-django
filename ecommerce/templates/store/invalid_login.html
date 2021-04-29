@@ -1,0 +1,9 @@
+{% extends 'store/main.html' %}
+{% load static %}
+  {% block content %}
+  <div class="alert alert-danger" role="alert" style="margin-top:100px">
+    <h1 class="alert-heading">Invalid Credentials</h1><hr>
+    <a href="{% url 'store:user_login' %}" class="alert-link">click here</a> to try again.<br>
+    New User ? <a href="{% url 'store:user_register' %}" class="alert-link">Register here</a>
+  </div>
+  {% endblock content %}

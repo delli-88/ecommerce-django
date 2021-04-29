@@ -1,0 +1,32 @@
+{% extends 'store/main.html' %}
+{% load static %}
+  {% block content %}
+  <div class="d-flex flex-row">
+    <p style="padding-top:21px;color:#0275d8;"><i>Shop by Category</i> :&nbsp;&nbsp;&nbsp</p>
+    <div class="btn-group store-category p-2" role="group" aria-label="Basic example">
+      <a href="{% url 'store:store' %}" class="btn btn-outline-primary">All</a>
+      {% for category in categories %}
+      <a href="/?category={{category.id}}" class="btn btn-outline-primary">{{category.name}}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+    <div class="row">
+      {% if products %}
+      {% for product in products %}
+      <div class="col-lg-4">
+        <img class="thumbnail" src="{{product.imageURL}}">
+        <div class="box-element product">
+          <h6><strong>{{product.name}}</strong></h6>
+          <hr>
+          <button style="width:70%" data-product={{product.id}} data-action="add" class="btn btn-outline-primary update-cart">Add to Cart</button>
+          <h4 style="float:right;display:inline-block">&#x20B9;{{product.price}}</h4>
+        </div>
+      </div>
+      {% endfor %}
+      {% else %}
+      <p>error</p>
+      {% endif %}
+    </div>
+    <p class="page-end-line">That's all folks !</p>
+  {% endblock content %}

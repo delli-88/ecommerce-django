@@ -1,0 +1,21 @@
+{% extends 'store/main.html' %}
+{% load static %}
+  {% block content %}
+
+    {% if registered %}
+      <div class="alert alert-success" role="alert" style="margin-top:100px">
+        <h1 class="alert-heading">Thank You for Registering...!</h1><hr>
+        <a href="{% url 'store:user_login' %}" class="alert-link">click here</a> to login
+      </div>
+    {% else %}
+    <div class="jumbotron">
+    <h1>Please register here</h1>
+    <form method="POST">
+      {% csrf_token %}
+      {{user_form.as_p}}
+      <input type="submit" name="" value="register" class="btn btn-primary">
+    </form>
+    {% endif %}
+
+  </div>
+  {% endblock content %}
